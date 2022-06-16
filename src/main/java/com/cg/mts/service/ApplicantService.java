@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cg.mts.entities.AdmissionStatus;
 import com.cg.mts.entities.Applicant;
 import com.cg.mts.exception.ApplicantNotFoundException;
 import com.cg.mts.repository.IApplicantRepository;
@@ -23,6 +22,7 @@ public class ApplicantService implements IApplicantService{
 	
 	@Override
 	public Applicant addApplicant(Applicant applicant) {
+		LOG.info("Adding applicant");
 		return applicantRepository.save(applicant);
 	}
 

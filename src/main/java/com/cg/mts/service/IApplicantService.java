@@ -2,7 +2,6 @@ package com.cg.mts.service;
 
 import java.util.List;
 
-import com.cg.mts.entities.AdmissionStatus;
 import com.cg.mts.entities.Applicant;
 
 public interface IApplicantService {

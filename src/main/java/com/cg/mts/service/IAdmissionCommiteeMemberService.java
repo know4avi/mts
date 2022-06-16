@@ -11,7 +11,7 @@ public interface IAdmissionCommiteeMemberService {
 	AdmissionCommiteeMember addCommiteeMember(AdmissionCommiteeMember acm);
 	AdmissionCommiteeMember updateCommiteeMember(AdmissionCommiteeMember acm);
 	AdmissionCommiteeMember viewCommiteeMember(int adminId);
-	void removeCommiteeMember(int adminId);
+	AdmissionCommiteeMember removeCommiteeMember(int adminId);
 	List<AdmissionCommiteeMember> viewAllCommiteeMember();
-	void provideAdmissionResult(Applicant applicant, Admission admission);
+//	void provideAdmissionResult(Applicant applicant, Admission admission);
 }
