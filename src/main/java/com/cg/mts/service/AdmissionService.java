@@ -1,6 +1,5 @@
 package com.cg.mts.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,26 +103,6 @@ public class AdmissionService implements IAdmissionService {
 			if (appUserService.loggedInUser.getRole().equals(Role.ADMIN)) {
 				LOG.info("Getting admission information by courseId");
 				List<Admission> admissionList = admissionRepository.findByCourseId(courseId);
-				return admissionList;
-			} else {
-				String exceptionMessage = "You are not authorised to access this resource!";
-				LOG.warn(exceptionMessage);
-				throw new NotAuthorizedException(exceptionMessage);
-			}
-		} else {
-			String exceptionMessage = "You are not logged in.";
-			LOG.warn(exceptionMessage);
-			throw new NotAuthorizedException(exceptionMessage);
-		}
-
-	}
-
-	@Override
-	public List<Admission> showAllAdmissionsByDate(LocalDate admissionDate) {
-		if (appUserService.loggedInUser != null) {
-			if (appUserService.loggedInUser.getRole().equals(Role.ADMIN)) {
-				LOG.info("Getting admission information by admissionDate");
-				List<Admission> admissionList = admissionRepository.findByAdmissionDate(admissionDate);
 				return admissionList;
 			} else {
 				String exceptionMessage = "You are not authorised to access this resource!";
