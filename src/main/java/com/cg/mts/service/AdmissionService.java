@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cg.mts.entities.Admission;
+import com.cg.mts.entities.Role;
 import com.cg.mts.exception.AdmissionNotFoundException;
+import com.cg.mts.exception.NotAuthorizedException;
 import com.cg.mts.repository.IAdmissionRepository;
 
 @Service
@@ -20,51 +22,120 @@ public class AdmissionService implements IAdmissionService {
 	@Autowired
 	IAdmissionRepository admissionRepository;
 
+	@Autowired
+	private MtsUserService appUserService;
+
 	@Override
 	public Admission addAdmission(Admission admission) {
-		LOG.info("Adding admission");
-		return admissionRepository.save(admission);
+		if (appUserService.loggedInUser != null) {
+			if (appUserService.loggedInUser.getRole().equals(Role.ADMIN)) {
+				LOG.info("Adding admission");
+				return admissionRepository.save(admission);
+			} else {
+				String exceptionMessage = "You are not authorised to access this resource!";
+				LOG.warn(exceptionMessage);
+				throw new NotAuthorizedException(exceptionMessage);
+			}
+		} else {
+			String exceptionMessage = "You are not logged in.";
+			LOG.warn(exceptionMessage);
+			throw new NotAuthorizedException(exceptionMessage);
+		}
+
 	}
 
 	@Override
 	public Admission updateAdmission(Admission admission) {
-		LOG.info(admission.toString());
-		Optional<Admission> admissionOptional = admissionRepository.findById(admission.getAdmissionId());
+		if (appUserService.loggedInUser != null) {
+			if (appUserService.loggedInUser.getRole().equals(Role.ADMIN)) {
+				LOG.info(admission.toString());
+				Optional<Admission> admissionOptional = admissionRepository.findById(admission.getAdmissionId());
 
-		if (admissionOptional.isPresent()) {
-			return admissionRepository.save(admission);
+				if (admissionOptional.isPresent()) {
+					return admissionRepository.save(admission);
+				} else {
+					String exceptionMessage = "Admission with admissionId " + admission.getAdmissionId()
+							+ " does not exist.";
+					LOG.warn(exceptionMessage);
+					throw new AdmissionNotFoundException(exceptionMessage);
+				}
+			} else {
+				String exceptionMessage = "You are not authorised to access this resource!";
+				LOG.warn(exceptionMessage);
+				throw new NotAuthorizedException(exceptionMessage);
+			}
 		} else {
-			String exceptionMessage = "Admission with admissionId " + admission.getAdmissionId() + " does not exist.";
+			String exceptionMessage = "You are not logged in.";
 			LOG.warn(exceptionMessage);
-			throw new AdmissionNotFoundException(exceptionMessage);
+			throw new NotAuthorizedException(exceptionMessage);
 		}
+
 	}
 
 	@Override
 	public Admission cancelAdmission(int admissionId) {
-		LOG.info("Cancelling admission");
-		Optional<Admission> admissionOptional = admissionRepository.findById(admissionId);
-		if (admissionOptional.isPresent()) {
-			Admission admission = admissionOptional.get();
-			admissionRepository.delete(admission);
-			return admission;
+		if (appUserService.loggedInUser != null) {
+			if (appUserService.loggedInUser.getRole().equals(Role.ADMIN)) {
+				LOG.info("Cancelling admission");
+				Optional<Admission> admissionOptional = admissionRepository.findById(admissionId);
+				if (admissionOptional.isPresent()) {
+					Admission admission = admissionOptional.get();
+					admissionRepository.delete(admission);
+					return admission;
+				} else {
+					throw new AdmissionNotFoundException("Admission with admissionId " + admissionId + " not found");
+				}
+			} else {
+				String exceptionMessage = "You are not authorised to access this resource!";
+				LOG.warn(exceptionMessage);
+				throw new NotAuthorizedException(exceptionMessage);
+			}
 		} else {
-			throw new AdmissionNotFoundException("Admission with admissionId " + admissionId + " not found");
+			String exceptionMessage = "You are not logged in.";
+			LOG.warn(exceptionMessage);
+			throw new NotAuthorizedException(exceptionMessage);
 		}
+
 	}
 
 	@Override
 	public List<Admission> showAllAdmissionsByCourseId(int courseId) {
-		LOG.info("Getting admission information by courseId");
-		List<Admission> admissionList = admissionRepository.findByCourseId(courseId);
-		return admissionList;
+		if (appUserService.loggedInUser != null) {
+			if (appUserService.loggedInUser.getRole().equals(Role.ADMIN)) {
+				LOG.info("Getting admission information by courseId");
+				List<Admission> admissionList = admissionRepository.findByCourseId(courseId);
+				return admissionList;
+			} else {
+				String exceptionMessage = "You are not authorised to access this resource!";
+				LOG.warn(exceptionMessage);
+				throw new NotAuthorizedException(exceptionMessage);
+			}
+		} else {
+			String exceptionMessage = "You are not logged in.";
+			LOG.warn(exceptionMessage);
+			throw new NotAuthorizedException(exceptionMessage);
+		}
+
 	}
 
 	@Override
 	public List<Admission> showAllAdmissionsByDate(LocalDate admissionDate) {
-		LOG.info("Getting admission information by admissionDate");
-		List<Admission> admissionList = admissionRepository.findByAdmissionDate(admissionDate);
-		return admissionList;
+		if (appUserService.loggedInUser != null) {
+			if (appUserService.loggedInUser.getRole().equals(Role.ADMIN)) {
+				LOG.info("Getting admission information by admissionDate");
+				List<Admission> admissionList = admissionRepository.findByAdmissionDate(admissionDate);
+				return admissionList;
+			} else {
+				String exceptionMessage = "You are not authorised to access this resource!";
+				LOG.warn(exceptionMessage);
+				throw new NotAuthorizedException(exceptionMessage);
+			}
+		} else {
+			String exceptionMessage = "You are not logged in.";
+			LOG.warn(exceptionMessage);
+			throw new NotAuthorizedException(exceptionMessage);
+		}
+
 	}
 
 }
